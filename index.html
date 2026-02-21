@@ -285,6 +285,243 @@
     color: var(--gray-400);
   }
 
+  /* ── Upload Zone ───────────────────────────────────────── */
+  .upload-zone {
+    border: 2px dashed var(--gray-400);
+    border-radius: 8px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+    background: var(--gray-50);
+    margin-bottom: 1.5rem;
+  }
+  .upload-zone:hover,
+  .upload-zone.drag-over {
+    border-color: var(--accent);
+    background: var(--accent-light);
+  }
+  .upload-zone .upload-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--gray-400);
+    transition: color 0.2s ease;
+  }
+  .upload-zone:hover .upload-icon,
+  .upload-zone.drag-over .upload-icon {
+    color: var(--accent);
+  }
+  .upload-zone .upload-text {
+    font-size: 0.95rem;
+    color: var(--gray-500);
+    line-height: 1.6;
+  }
+  .upload-zone .upload-text strong {
+    color: var(--accent);
+  }
+  .upload-zone input[type="file"] {
+    display: none;
+  }
+
+  /* ── File Info ───────────────────────────────────────── */
+  .file-info {
+    display: none;
+    margin-bottom: 1.5rem;
+  }
+  .file-info.visible { display: block; }
+  .file-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--green-light);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: var(--green);
+    align-items: center;
+  }
+  .file-meta .file-name {
+    font-weight: 600;
+    color: var(--gray-900);
+  }
+
+  /* ── Preview Table ───────────────────────────────────── */
+  .preview-table-wrap {
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+  }
+  .preview-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    font-family: var(--mono);
+  }
+  .preview-table caption {
+    text-align: left;
+    padding: 0.6rem 0.75rem;
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gray-400);
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .preview-table th {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    font-weight: 600;
+    color: var(--gray-900);
+    background: var(--gray-50);
+    border-bottom: 2px solid var(--gray-200);
+    white-space: nowrap;
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .preview-table td {
+    text-align: left;
+    padding: 0.4rem 0.75rem;
+    border-bottom: 1px solid var(--gray-100);
+    color: var(--gray-700);
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .preview-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  .preview-table tbody tr:hover {
+    background: var(--gray-50);
+  }
+
+  /* ── Column Schema ───────────────────────────────────── */
+  .column-schema {
+    margin-bottom: 1.5rem;
+  }
+  .column-schema-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  .col-row {
+    display: grid;
+    grid-template-columns: 140px 90px 1fr;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .col-row:last-child { border-bottom: none; }
+  .col-name {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--gray-900);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .col-type {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.1rem 0.5rem;
+    border-radius: 9999px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .col-type-numeric { background: #DBEAFE; color: #1D4ED8; }
+  .col-type-categorical { background: #FEF3C7; color: #92400E; }
+  .col-type-text { background: #E0E7FF; color: #4338CA; }
+  .col-type-date { background: #D1FAE5; color: #065F46; }
+  .col-type-boolean { background: #FCE7F3; color: #9D174D; }
+  .col-desc-input {
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--gray-200);
+    border-radius: 4px;
+    color: var(--gray-700);
+    background: #fff;
+    transition: border-color 0.15s ease;
+    width: 100%;
+  }
+  .col-desc-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+  }
+  .col-desc-input::placeholder {
+    color: var(--gray-400);
+    font-style: italic;
+  }
+
+  /* ── CTA ─────────────────────────────────────────────── */
+  .cta-area {
+    display: none;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+  .cta-area.visible { display: flex; }
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.5rem;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+    letter-spacing: 0.01em;
+  }
+  .cta-btn:hover {
+    background: #1D4ED8;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+  }
+  .cta-hint {
+    font-size: 0.78rem;
+    color: var(--gray-500);
+    line-height: 1.5;
+    max-width: 380px;
+  }
+
+  /* ── Demo Divider ────────────────────────────────────── */
+  .demo-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 3rem 0 2.5rem;
+  }
+  .demo-divider::before,
+  .demo-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gray-200);
+  }
+  .demo-divider span {
+    font-family: var(--serif);
+    font-size: 0.85rem;
+    color: var(--gray-400);
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+  }
+
   /* ── Responsive ──────────────────────────────────────── */
   @media (max-width: 640px) {
     .container { padding: 0 1rem; }
@@ -294,6 +531,9 @@
     .card-metrics { gap: 0.4rem 0.75rem; }
     .params-grid { grid-template-columns: 1fr 1fr; }
     .stats-bar { grid-template-columns: 1fr 1fr; }
+    .col-row { grid-template-columns: 1fr; gap: 0.25rem; }
+    .upload-zone { padding: 1.5rem 1rem; }
+    .cta-area { flex-direction: column; align-items: flex-start; }
   }
 </style>
 </head>
@@ -339,6 +579,56 @@
     </div>
   </div>
 </header>
+
+<!-- ═══════════════════ GUIDED INTERACTION ═══════════════ -->
+<section id="try-section">
+  <h2>Try Your Own Dataset</h2>
+  <p class="section-desc">Upload a CSV file to preview its structure, then run AutoDiscovery on it for free.</p>
+
+  <!-- Upload Zone -->
+  <div class="upload-zone" id="uploadZone">
+    <div class="upload-icon">⬆</div>
+    <div class="upload-text">
+      <strong>Drag &amp; drop a CSV file</strong> here, or click to browse<br>
+      <span style="font-size:0.8rem; color:var(--gray-400)">Plain CSV only · Parsed locally in your browser · Nothing uploaded</span>
+    </div>
+    <input type="file" id="csvInput" accept=".csv,text/csv">
+  </div>
+
+  <!-- File Info (hidden until upload) -->
+  <div class="file-info" id="fileInfo">
+    <div class="file-meta" id="fileMeta"></div>
+
+    <!-- Data Preview Table -->
+    <div class="preview-table-wrap">
+      <table class="preview-table" id="previewTable">
+        <caption>Data Preview — First 5 Rows</caption>
+        <thead id="previewHead"></thead>
+        <tbody id="previewBody"></tbody>
+      </table>
+    </div>
+
+    <!-- Column Schema -->
+    <div class="column-schema">
+      <h3 style="font-family:var(--serif); font-size:1.1rem; font-weight:700; color:var(--gray-900); margin-bottom:0.75rem;">Column Descriptions <span style="font-weight:400; font-size:0.82rem; color:var(--gray-400)">(optional)</span></h3>
+      <p style="font-size:0.82rem; color:var(--gray-500); margin-bottom:0.75rem;">Briefly describe what each column represents. This helps the AI generate better hypotheses.</p>
+      <div class="column-schema-grid" id="columnSchema"></div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-area visible" id="ctaArea">
+      <a href="https://autodiscovery.allen.ai/runs" target="_blank" rel="noopener" class="cta-btn">
+        ▶ Run on AstaLabs (Free)
+      </a>
+      <span class="cta-hint">Upload your dataset there to run AutoDiscovery.<br>Free credits available until Feb 28, 2026.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ DEMO DIVIDER ════════════════════ -->
+<div class="demo-divider">
+  <span>⬇&ensp;Demo Results (NLS SES Dataset)&ensp;⬇</span>
+</div>
 
 <!-- ═══════════════════ EXPLORATION STATS ════════════════ -->
 <section>
@@ -762,6 +1052,153 @@ new Chart(ctxCat, {
     }
   }
 });
+
+// ══════════════════════════════════════════════════════════
+// ── CSV Upload & Preview ─────────────────────────────────
+// ══════════════════════════════════════════════════════════
+(function() {
+  const zone   = document.getElementById('uploadZone');
+  const input  = document.getElementById('csvInput');
+  const info   = document.getElementById('fileInfo');
+  const meta   = document.getElementById('fileMeta');
+  const thead  = document.getElementById('previewHead');
+  const tbody  = document.getElementById('previewBody');
+  const schema = document.getElementById('columnSchema');
+
+  // Click to open file picker
+  zone.addEventListener('click', () => input.click());
+
+  // Drag & drop events
+  ['dragenter','dragover'].forEach(e => {
+    zone.addEventListener(e, ev => { ev.preventDefault(); zone.classList.add('drag-over'); });
+  });
+  ['dragleave','drop'].forEach(e => {
+    zone.addEventListener(e, ev => { ev.preventDefault(); zone.classList.remove('drag-over'); });
+  });
+  zone.addEventListener('drop', ev => {
+    const file = ev.dataTransfer.files[0];
+    if (file) handleFile(file);
+  });
+  input.addEventListener('change', () => {
+    if (input.files[0]) handleFile(input.files[0]);
+  });
+
+  function handleFile(file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const text = e.target.result;
+      const parsed = parseCSV(text);
+      if (!parsed || parsed.rows.length === 0) {
+        alert('Could not parse CSV. Please check the file format.');
+        return;
+      }
+      renderPreview(file.name, parsed);
+    };
+    reader.readAsText(file);
+  }
+
+  // Minimal robust CSV parser (handles quoted fields)
+  function parseCSV(text) {
+    const lines = [];
+    let current = [];
+    let field = '';
+    let inQuote = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (inQuote) {
+        if (c === '"') {
+          if (text[i+1] === '"') { field += '"'; i++; }
+          else inQuote = false;
+        } else { field += c; }
+      } else {
+        if (c === '"') { inQuote = true; }
+        else if (c === ',') { current.push(field.trim()); field = ''; }
+        else if (c === '\n' || c === '\r') {
+          if (c === '\r' && text[i+1] === '\n') i++;
+          current.push(field.trim()); field = '';
+          if (current.some(f => f !== '')) lines.push(current);
+          current = [];
+        } else { field += c; }
+      }
+    }
+    current.push(field.trim());
+    if (current.some(f => f !== '')) lines.push(current);
+    if (lines.length < 2) return null;
+    return { headers: lines[0], rows: lines.slice(1) };
+  }
+
+  // Infer column type from sample values
+  function inferType(values) {
+    const sample = values.filter(v => v !== '' && v !== 'NA' && v !== 'N/A' && v !== 'null').slice(0, 50);
+    if (sample.length === 0) return 'text';
+    // Boolean?
+    const boolSet = new Set(sample.map(v => v.toLowerCase()));
+    if (boolSet.size <= 2 && [...boolSet].every(v => ['true','false','0','1','yes','no'].includes(v))) return 'boolean';
+    // Date?
+    const datePattern = /^\d{4}[-\/]\d{1,2}[-\/]\d{1,2}/;
+    if (sample.every(v => datePattern.test(v))) return 'date';
+    // Numeric?
+    if (sample.every(v => !isNaN(Number(v)))) return 'numeric';
+    // Categorical (low cardinality)?
+    const unique = new Set(sample);
+    if (unique.size <= Math.max(10, sample.length * 0.3)) return 'categorical';
+    return 'text';
+  }
+
+  function renderPreview(fileName, data) {
+    const { headers, rows } = data;
+    const nRows = rows.length;
+    const nCols = headers.length;
+
+    // Show info area
+    info.classList.add('visible');
+
+    // Meta bar
+    meta.innerHTML = `
+      <span class="file-name">📄 ${esc(fileName)}</span>
+      <span>${nRows.toLocaleString()} rows</span>
+      <span>${nCols} columns</span>
+    `;
+
+    // Preview table header
+    thead.innerHTML = '<tr>' + headers.map(h => `<th>${esc(h)}</th>`).join('') + '</tr>';
+
+    // Preview table body (first 5 rows)
+    const preview = rows.slice(0, 5);
+    tbody.innerHTML = preview.map(row =>
+      '<tr>' + headers.map((_, i) => `<td>${esc(row[i] || '')}</td>`).join('') + '</tr>'
+    ).join('');
+
+    // Column schema with type inference + description inputs
+    const colValues = headers.map((_, ci) => rows.map(r => r[ci] || ''));
+    schema.innerHTML = headers.map((h, i) => {
+      const type = inferType(colValues[i]);
+      const typeClass = 'col-type-' + type;
+      const placeholders = {
+        numeric: 'e.g. "Annual income in USD"',
+        categorical: 'e.g. "Ethnic group (Black, White, Hispanic)"',
+        text: 'e.g. "Open-ended response text"',
+        date: 'e.g. "Date of survey interview"',
+        boolean: 'e.g. "Whether respondent completed college"'
+      };
+      return `
+        <div class="col-row">
+          <span class="col-name" title="${esc(h)}">${esc(h)}</span>
+          <span class="col-type ${typeClass}">${type}</span>
+          <input type="text" class="col-desc-input" placeholder='${placeholders[type] || "Describe this column…"}'>
+        </div>`;
+    }).join('');
+
+    // Scroll into view
+    info.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function esc(s) {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+})();
 </script>
 </body>
 </html>
