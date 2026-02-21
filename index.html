@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoDiscovery — NLS-SES Exploration Results</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  /* ── Reset & Base ────────────────────────────────────── */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --accent: #2563EB;
+    --accent-light: #DBEAFE;
+    --green: #059669;
+    --green-light: #D1FAE5;
+    --gray-900: #111827;
+    --gray-700: #374151;
+    --gray-500: #6B7280;
+    --gray-400: #9CA3AF;
+    --gray-200: #E5E7EB;
+    --gray-100: #F3F4F6;
+    --gray-50: #F9FAFB;
+    --red: #DC2626;
+    --red-light: #FEE2E2;
+    --serif: 'Georgia', 'Palatino Linotype', 'Times New Roman', serif;
+    --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  }
+
+  html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: var(--sans);
+    color: var(--gray-700);
+    background: #fff;
+    line-height: 1.7;
+  }
+
+  /* ── Layout ──────────────────────────────────────────── */
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  /* ── Header ──────────────────────────────────────────── */
+  header {
+    padding: 4rem 0 2.5rem;
+    border-bottom: 1px solid var(--gray-200);
+    margin-bottom: 3rem;
+  }
+  header h1 {
+    font-family: var(--serif);
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+  header .subtitle {
+    font-size: 1.05rem;
+    color: var(--gray-500);
+    margin-bottom: 1.5rem;
+  }
+  .params-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.75rem 1.5rem;
+  }
+  .param {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+  }
+  .param-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-400);
+    white-space: nowrap;
+  }
+  .param-value {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--gray-900);
+  }
+
+  /* ── Section ─────────────────────────────────────────── */
+  section {
+    margin-bottom: 3.5rem;
+  }
+  section h2 {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 0.25rem;
+  }
+  section .section-desc {
+    font-size: 0.9rem;
+    color: var(--gray-500);
+    margin-bottom: 1.5rem;
+  }
+
+  /* ── Stats Bar ───────────────────────────────────────── */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .stat-card {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+  }
+  .stat-card .stat-number {
+    font-family: var(--serif);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    line-height: 1.1;
+  }
+  .stat-card .stat-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gray-500);
+    margin-top: 0.25rem;
+  }
+
+  /* ── Discovery Cards ─────────────────────────────────── */
+  .discovery-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .discovery-card {
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 1.5rem 1.75rem;
+    background: #fff;
+    transition: box-shadow 0.15s ease;
+  }
+  .discovery-card:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  .card-rank {
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--serif);
+    font-size: 0.9rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .card-hypothesis {
+    flex: 1;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--gray-900);
+  }
+  .card-metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--gray-100);
+  }
+  .metric {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+  }
+  .metric-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--gray-400);
+  }
+  .metric-value {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--gray-700);
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.15rem 0.55rem;
+    border-radius: 9999px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .badge-confirmed {
+    background: var(--green-light);
+    color: var(--green);
+  }
+  .badge-notsuprising {
+    background: var(--gray-100);
+    color: var(--gray-500);
+  }
+  .belief-arrow {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--gray-700);
+  }
+  .belief-arrow .arrow {
+    color: var(--accent);
+    margin: 0 0.15rem;
+  }
+
+  /* ── Reward Bar (inline) ─────────────────────────────── */
+  .reward-bar-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .reward-bar-track {
+    width: 80px;
+    height: 6px;
+    background: var(--gray-100);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .reward-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--accent);
+  }
+
+  /* ── Chart ───────────────────────────────────────────── */
+  .chart-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 1rem 0;
+  }
+  .chart-container canvas {
+    width: 100% !important;
+  }
+
+  /* ── Methods ─────────────────────────────────────────── */
+  .methods-box {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 1.75rem 2rem;
+    font-size: 0.9rem;
+    line-height: 1.75;
+  }
+  .methods-box p {
+    margin-bottom: 0.75rem;
+  }
+  .methods-box p:last-child {
+    margin-bottom: 0;
+  }
+  .methods-box strong {
+    color: var(--gray-900);
+  }
+
+  /* ── Footer ──────────────────────────────────────────── */
+  footer {
+    border-top: 1px solid var(--gray-200);
+    padding: 2rem 0 3rem;
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--gray-400);
+  }
+
+  /* ── Responsive ──────────────────────────────────────── */
+  @media (max-width: 640px) {
+    .container { padding: 0 1rem; }
+    header h1 { font-size: 1.6rem; }
+    section h2 { font-size: 1.25rem; }
+    .card-header { flex-direction: column; }
+    .card-metrics { gap: 0.4rem 0.75rem; }
+    .params-grid { grid-template-columns: 1fr 1fr; }
+    .stats-bar { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════ HEADER ═══════════════════════ -->
+<div class="container">
+<header>
+  <h1>AutoDiscovery</h1>
+  <p class="subtitle">Automated Scientific Discovery via Bayesian Surprise &amp; Monte Carlo Tree Search — NLS Socioeconomic Status Dataset</p>
+  <div class="params-grid">
+    <div class="param">
+      <span class="param-label">Model</span>
+      <span class="param-value">gpt-4o</span>
+    </div>
+    <div class="param">
+      <span class="param-label">Experiments</span>
+      <span class="param-value">4 rounds × 8 candidates</span>
+    </div>
+    <div class="param">
+      <span class="param-label">Dataset</span>
+      <span class="param-value">nls_ses (DiscoveryBench)</span>
+    </div>
+    <div class="param">
+      <span class="param-label">Belief Mode</span>
+      <span class="param-value">boolean_cat</span>
+    </div>
+    <div class="param">
+      <span class="param-label">Reward</span>
+      <span class="param-value">KL Divergence</span>
+    </div>
+    <div class="param">
+      <span class="param-label">MCTS Selection</span>
+      <span class="param-value">UCB1 (recursive)</span>
+    </div>
+    <div class="param">
+      <span class="param-label">Belief Samples</span>
+      <span class="param-value">30</span>
+    </div>
+    <div class="param">
+      <span class="param-label">Run Time</span>
+      <span class="param-value">2026-02-21 12:20</span>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════ EXPLORATION STATS ════════════════ -->
+<section>
+  <h2>Exploration Summary</h2>
+  <p class="section-desc">Aggregate statistics from the MCTS exploration run.</p>
+  <div class="stats-bar">
+    <div class="stat-card">
+      <div class="stat-number">4</div>
+      <div class="stat-label">Hypotheses Tested</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">0</div>
+      <div class="stat-label">Surprising Discoveries</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">2.20</div>
+      <div class="stat-label">Mean KL Divergence</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">0.440</div>
+      <div class="stat-label">Mean Reward</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ DISCOVERY FEED ═══════════════════ -->
+<section>
+  <h2>Discovery Feed</h2>
+  <p class="section-desc">Hypotheses ranked by self-reward score. Each card shows the experimental finding, belief update, and information-theoretic metrics.</p>
+
+  <div class="discovery-list">
+
+    <!-- ── Card 1 ── -->
+    <div class="discovery-card">
+      <div class="card-header">
+        <div class="card-rank">1</div>
+        <div class="card-hypothesis">
+          Socioeconomic status (SES) is a significant predictor of the composite ASVAB score ability among respondents of the NLS dataset.
+        </div>
+      </div>
+      <div class="card-metrics">
+        <div class="metric">
+          <span class="metric-label">Surprise</span>
+          <span class="badge badge-notsuprising">✗ Expected</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Belief</span>
+          <span class="belief-arrow">0.742 <span class="arrow">→</span> 0.907</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Δ Belief</span>
+          <span class="metric-value">+0.165</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">KL Divergence</span>
+          <span class="metric-value">3.591</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Reward</span>
+          <div class="reward-bar-container">
+            <span class="metric-value">0.718</span>
+            <div class="reward-bar-track"><div class="reward-bar-fill" style="width:71.8%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Card 2 ── -->
+    <div class="discovery-card">
+      <div class="card-header">
+        <div class="card-rank">2</div>
+        <div class="card-hypothesis">
+          Black respondents have significantly different class percentiles compared to their White and Hispanic counterparts.
+        </div>
+      </div>
+      <div class="card-metrics">
+        <div class="metric">
+          <span class="metric-label">Surprise</span>
+          <span class="badge badge-notsuprising">✗ Expected</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Belief</span>
+          <span class="belief-arrow">0.726 <span class="arrow">→</span> 0.890</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Δ Belief</span>
+          <span class="metric-value">+0.164</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">KL Divergence</span>
+          <span class="metric-value">3.258</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Reward</span>
+          <div class="reward-bar-container">
+            <span class="metric-value">0.652</span>
+            <div class="reward-bar-track"><div class="reward-bar-fill" style="width:65.2%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Card 3 ── -->
+    <div class="discovery-card">
+      <div class="card-header">
+        <div class="card-rank">3</div>
+        <div class="card-hypothesis">
+          The effect of race on ASVAB-derived abilities is mediated through socioeconomic status, indicating an indirect effect of race on ability through SES.
+        </div>
+      </div>
+      <div class="card-metrics">
+        <div class="metric">
+          <span class="metric-label">Surprise</span>
+          <span class="badge badge-notsuprising">✗ Expected</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Belief</span>
+          <span class="belief-arrow">0.734 <span class="arrow">→</span> 0.838</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Δ Belief</span>
+          <span class="metric-value">+0.104</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">KL Divergence</span>
+          <span class="metric-value">1.192</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Reward</span>
+          <div class="reward-bar-container">
+            <span class="metric-value">0.238</span>
+            <div class="reward-bar-track"><div class="reward-bar-fill" style="width:23.8%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Card 4 ── -->
+    <div class="discovery-card">
+      <div class="card-header">
+        <div class="card-rank">4</div>
+        <div class="card-hypothesis">
+          There is a significant difference in ability scores between males and females within each racial group.
+        </div>
+      </div>
+      <div class="card-metrics">
+        <div class="metric">
+          <span class="metric-label">Surprise</span>
+          <span class="badge badge-notsuprising">✗ Expected</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Belief</span>
+          <span class="belief-arrow">0.629 <span class="arrow">→</span> 0.538</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Δ Belief</span>
+          <span class="metric-value">−0.091</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">KL Divergence</span>
+          <span class="metric-value">0.759</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Reward</span>
+          <div class="reward-bar-container">
+            <span class="metric-value">0.152</span>
+            <div class="reward-bar-track"><div class="reward-bar-fill" style="width:15.2%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════ BELIEF DISTRIBUTION CHART ════════════ -->
+<section>
+  <h2>Belief Distribution</h2>
+  <p class="section-desc">Prior vs. posterior mean belief (P(H|data)) for each tested hypothesis, illustrating how evidence shifted confidence.</p>
+  <div class="chart-container">
+    <canvas id="beliefChart" height="280"></canvas>
+  </div>
+</section>
+
+<!-- ═══════════════ KL DIVERGENCE CHART ══════════════════ -->
+<section>
+  <h2>Information Gain</h2>
+  <p class="section-desc">KL Divergence — bits of information gained from each experiment, measuring how much the posterior diverged from the prior.</p>
+  <div class="chart-container">
+    <canvas id="klChart" height="220"></canvas>
+  </div>
+</section>
+
+<!-- ═══════════════ BELIEF CATEGORIES ════════════════════ -->
+<section>
+  <h2>Belief Category Breakdown</h2>
+  <p class="section-desc">Detailed prior and posterior belief sample distributions across the five confidence categories.</p>
+  <div class="chart-container">
+    <canvas id="beliefCatChart" height="300"></canvas>
+  </div>
+</section>
+
+<!-- ═══════════════════ METHODS ══════════════════════════ -->
+<section>
+  <h2>Methodology</h2>
+  <div class="methods-box">
+    <p>
+      <strong>AutoDiscovery</strong> is an AI-driven scientific discovery framework developed by the Allen Institute for AI (AI2).
+      It uses a <strong>Monte Carlo Tree Search (MCTS)</strong> strategy to explore a combinatorial space of hypotheses and experiments,
+      selecting the most informative path at each step via the <strong>UCB1</strong> bandit algorithm.
+    </p>
+    <p>
+      At each node, a large language model proposes a hypothesis and designs an experiment (including executable code).
+      After execution, a separate <strong>Bayesian Belief Update</strong> module evaluates the result:
+      an LLM jury samples categorical beliefs ("definitely true" → "definitely false") both <em>before</em> (prior) and <em>after</em> (posterior)
+      seeing the experimental evidence, using <em>n</em> = 30 independent samples per distribution.
+    </p>
+    <p>
+      The <strong>reward signal</strong> is derived from the <strong>KL Divergence</strong> between the prior and posterior belief distributions,
+      scaled by a configurable factor (here κ = 5). Larger divergence means the experiment was more <em>informative</em> — it changed the model's beliefs substantially.
+      A "surprise" flag (not triggered in this run) would indicate findings that contradicted the prior expectation.
+    </p>
+    <p>
+      The tree is grown iteratively: each round selects a parent node, generates candidate experiments, runs the most promising one,
+      updates beliefs, and back-propagates the reward. This demo ran <strong>4 MCTS iterations</strong> with 8 candidate experiments per round,
+      using <strong>GPT-4o</strong> as both the hypothesis-generating and belief-evaluating model.
+    </p>
+  </div>
+</section>
+
+<footer>
+  AutoDiscovery Dashboard &middot; Generated 2026-02-21 &middot; Data: NLS Socioeconomic Status (DiscoveryBench)
+</footer>
+</div>
+
+<!-- ═══════════════════ SCRIPTS ══════════════════════════ -->
+<script>
+// ── Data ──────────────────────────────────────────────
+const hypotheses = [
+  'H1: SES → ASVAB Score',
+  'H2: Race → Class Percentile',
+  'H3: Race → ASVAB (SES mediator)',
+  'H4: Gender → Ability (by race)'
+];
+
+const priors     = [0.742, 0.726, 0.734, 0.629];
+const posteriors = [0.907, 0.890, 0.838, 0.538];
+const klValues   = [3.591, 3.258, 1.192, 0.759];
+
+// ── Belief Chart (grouped bar) ────────────────────────
+const ctxBelief = document.getElementById('beliefChart').getContext('2d');
+new Chart(ctxBelief, {
+  type: 'bar',
+  data: {
+    labels: hypotheses,
+    datasets: [
+      {
+        label: 'Prior P(H)',
+        data: priors,
+        backgroundColor: '#DBEAFE',
+        borderColor: '#93C5FD',
+        borderWidth: 1,
+        borderRadius: 3,
+        barPercentage: 0.7,
+        categoryPercentage: 0.65
+      },
+      {
+        label: 'Posterior P(H|E)',
+        data: posteriors,
+        backgroundColor: '#2563EB',
+        borderColor: '#1D4ED8',
+        borderWidth: 1,
+        borderRadius: 3,
+        barPercentage: 0.7,
+        categoryPercentage: 0.65
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: { font: { family: "'Inter', system-ui, sans-serif", size: 12 }, padding: 16 }
+      },
+      tooltip: {
+        callbacks: {
+          label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(3)}`
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 1,
+        ticks: {
+          font: { family: "'Inter', system-ui, sans-serif", size: 11 },
+          callback: v => v.toFixed(1)
+        },
+        grid: { color: '#F3F4F6' }
+      },
+      x: {
+        ticks: { font: { family: "'Inter', system-ui, sans-serif", size: 11 } },
+        grid: { display: false }
+      }
+    }
+  }
+});
+
+// ── KL Divergence Chart ───────────────────────────────
+const ctxKL = document.getElementById('klChart').getContext('2d');
+new Chart(ctxKL, {
+  type: 'bar',
+  data: {
+    labels: hypotheses,
+    datasets: [{
+      label: 'KL Divergence (bits)',
+      data: klValues,
+      backgroundColor: klValues.map(v => v > 2 ? '#059669' : v > 1 ? '#10B981' : '#D1FAE5'),
+      borderColor: klValues.map(v => v > 2 ? '#047857' : v > 1 ? '#059669' : '#6EE7B7'),
+      borderWidth: 1,
+      borderRadius: 3,
+      barPercentage: 0.55
+    }]
+  },
+  options: {
+    responsive: true,
+    indexAxis: 'y',
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => `KL Divergence: ${ctx.parsed.x.toFixed(3)}`
+        }
+      }
+    },
+    scales: {
+      x: {
+        beginAtZero: true,
+        ticks: {
+          font: { family: "'Inter', system-ui, sans-serif", size: 11 },
+          callback: v => v.toFixed(1)
+        },
+        grid: { color: '#F3F4F6' }
+      },
+      y: {
+        ticks: { font: { family: "'Inter', system-ui, sans-serif", size: 11 } },
+        grid: { display: false }
+      }
+    }
+  }
+});
+
+// ── Belief Category Breakdown (stacked bar) ───────────
+const categories = ['Definitely True', 'Maybe True', 'Uncertain', 'Maybe False', 'Definitely False'];
+const catColors = ['#1D4ED8', '#60A5FA', '#D1D5DB', '#F59E0B', '#DC2626'];
+const catColorsBorder = ['#1E40AF', '#3B82F6', '#9CA3AF', '#D97706', '#B91C1C'];
+
+// Prior data (from n=30 samples)
+const priorData = {
+  'H1 Prior':     [0,  30, 0,  0,  0],
+  'H1 Post':      [58,  2, 0,  0,  0],
+  'H2 Prior':     [0,  28, 2,  0,  0],
+  'H2 Post':      [54,  6, 0,  0,  0],
+  'H3 Prior':     [0,  29, 1,  0,  0],
+  'H3 Post':      [34, 26, 0,  0,  0],
+  'H4 Prior':     [0,  16, 14, 0,  0],
+  'H4 Post':      [0,  26, 6,  28, 0],
+};
+
+const catLabels = Object.keys(priorData);
+const catDatasets = categories.map((cat, i) => ({
+  label: cat,
+  data: catLabels.map(k => priorData[k][i]),
+  backgroundColor: catColors[i],
+  borderColor: catColorsBorder[i],
+  borderWidth: 1,
+  borderRadius: 2,
+  barPercentage: 0.75,
+  categoryPercentage: 0.8
+}));
+
+const ctxCat = document.getElementById('beliefCatChart').getContext('2d');
+new Chart(ctxCat, {
+  type: 'bar',
+  data: {
+    labels: catLabels,
+    datasets: catDatasets
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: { font: { family: "'Inter', system-ui, sans-serif", size: 11 }, padding: 12, boxWidth: 12 }
+      },
+      tooltip: {
+        callbacks: {
+          label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y} samples`
+        }
+      }
+    },
+    scales: {
+      x: {
+        stacked: true,
+        ticks: { font: { family: "'Inter', system-ui, sans-serif", size: 10 }, maxRotation: 45 },
+        grid: { display: false }
+      },
+      y: {
+        stacked: true,
+        beginAtZero: true,
+        max: 65,
+        ticks: { font: { family: "'Inter', system-ui, sans-serif", size: 11 } },
+        grid: { color: '#F3F4F6' },
+        title: {
+          display: true,
+          text: 'Belief Samples (n)',
+          font: { family: "'Inter', system-ui, sans-serif", size: 12 }
+        }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
